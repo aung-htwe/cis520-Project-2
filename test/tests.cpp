@@ -39,6 +39,13 @@ TEST(load_process_control_blocks, InvalidParam){
 	EXPECT_EQ(NULL, load_process_control_blocks(NULL));
 }
 
+TEST (load_process_control_blocks, CorrectlyRead){
+	const char* input_filename = "../pcb.bin";
+	dyn_array_t* arr = load_process_control_blocks(input_filename);
+	ASSERT_NE((dyn_array_t*)NULL, arr);
+}
+
+
 int main(int argc, char **argv)
 {
 	::testing::InitGoogleTest(&argc, argv);
