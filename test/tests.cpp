@@ -35,10 +35,13 @@ class GradeEnvironment : public testing::Environment
 };
 */
 
+TEST(load_process_control_blocks, InvalidParam){
+	EXPECT_EQ(NULL, load_process_control_blocks(NULL));
+}
 
 int main(int argc, char **argv)
 {
-	// ::testing::InitGoogleTest(&argc, argv);
+	::testing::InitGoogleTest(&argc, argv);
 	// ::testing::AddGlobalTestEnvironment(new GradeEnvironment);
 	return RUN_ALL_TESTS();
 }
