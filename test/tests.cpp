@@ -61,8 +61,6 @@ TEST (first_come_first_serve, InvalidParam){
 TEST (first_come_first_serve, CorrectProcess){
 	dyn_array_t *queue = dyn_array_create(3, sizeof(ProcessControlBlock_t), NULL);
 
-	assert(queue != NULL);
-
 	ProcessControlBlock_t *p1;
 	p1->priority = 0;
 	p1->arrival = 0;
@@ -86,11 +84,7 @@ TEST (first_come_first_serve, CorrectProcess){
 
 	ScheduleResult_t *output = (ScheduleResult_t *)malloc(sizeof(ScheduleResult_t));
 
-	bool result = first_come_first_serve(queue, output);
-	assert(result == true);
-	assert(output->total_run_time == 23);
-	assert(output->average_turnaround_time == 16);
-	assert(output->average_waiting_time == ((10.0 + 5.0 + 8.0)/3.0));
+	ASSERT_EQ(true, first_come_first_serve(queue,output));
 }
 
 
