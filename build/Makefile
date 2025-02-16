@@ -203,6 +203,30 @@ src/dyn_array.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dyn_array.dir/build.make CMakeFiles/dyn_array.dir/src/dyn_array.c.s
 .PHONY : src/dyn_array.c.s
 
+src/process_scheduling.o: src/process_scheduling.c.o
+.PHONY : src/process_scheduling.o
+
+# target to build an object file
+src/process_scheduling.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/hw2_test.dir/build.make CMakeFiles/hw2_test.dir/src/process_scheduling.c.o
+.PHONY : src/process_scheduling.c.o
+
+src/process_scheduling.i: src/process_scheduling.c.i
+.PHONY : src/process_scheduling.i
+
+# target to preprocess a source file
+src/process_scheduling.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/hw2_test.dir/build.make CMakeFiles/hw2_test.dir/src/process_scheduling.c.i
+.PHONY : src/process_scheduling.c.i
+
+src/process_scheduling.s: src/process_scheduling.c.s
+.PHONY : src/process_scheduling.s
+
+# target to generate assembly for a file
+src/process_scheduling.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/hw2_test.dir/build.make CMakeFiles/hw2_test.dir/src/process_scheduling.c.s
+.PHONY : src/process_scheduling.c.s
+
 test/tests.o: test/tests.cpp.o
 .PHONY : test/tests.o
 
@@ -244,6 +268,9 @@ help:
 	@echo "... src/dyn_array.o"
 	@echo "... src/dyn_array.i"
 	@echo "... src/dyn_array.s"
+	@echo "... src/process_scheduling.o"
+	@echo "... src/process_scheduling.i"
+	@echo "... src/process_scheduling.s"
 	@echo "... test/tests.o"
 	@echo "... test/tests.i"
 	@echo "... test/tests.s"

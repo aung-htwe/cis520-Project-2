@@ -6,5 +6,5 @@ C_DEFINES =
 
 C_INCLUDES = -I/homes/lcoverdale/cis520-Project-2/include
 
-C_FLAGS = -std=c11 -Wall -Wextra -Wshadow -Werror
+C_FLAGS = -std=c11 -Wall -Wextra -Wshadow -Werror -g
 
