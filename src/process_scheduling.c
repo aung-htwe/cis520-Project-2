@@ -257,24 +257,35 @@ dyn_array_t *load_process_control_blocks(const char *input_file)
 
 	uint32_t n = 0;
 	int count = 0;
+	size_t read;
 
-	char* buffer = (char*) malloc(sizeof(uint32_t));
+	unsigned char* buffer = (unsigned char*) malloc(sizeof(uint32_t)); 
 	if (buffer == NULL) return NULL;
 
+
 	// grab n = number of PCBs
-	if (fgets(buffer, sizeof(uint32_t), file) != NULL)
-		memcpy(&n, buffer, sizeof(uint32_t));
+	if ((read = fread(buffer, 4, 1, file)) > 0)
+		memcpy(&n, buffer, sizeof(uint32_t)); 
 
 	// create array with room for n PCBs
 	dyn_array_t* arr = dyn_array_create((size_t)n, sizeof(ProcessControlBlock_t), NULL);
+	ProcessControlBlock_t* pcb;
 
-	// read burst times 
-	while (fgets(buffer, sizeof(uint32_t), file) != NULL){
-		if (count % 3 == 0){
-			ProcessControlBlock_t pcb = { .remaining_burst_time = *(uint32_t *)&buffer };
-			dyn_array_push_front(arr, (const void*)&pcb);
+	// read PCB contents 
+	while ((read = fread(buffer, 4, 1, file)) > 0){
+		if (count == 0){
+			pcb = (ProcessControlBlock_t*) malloc (sizeof(ProcessControlBlock_t));
+			memcpy(&(pcb->remaining_burst_time), buffer, 4);
 		}
-		count++;
+		else if (count == 1)
+			memcpy(&(pcb->priority), buffer, 4);
+		else if (count == 2){
+			memcpy(&(pcb->arrival), buffer, 4);
+			dyn_array_push_front(arr, &pcb);
+		}
+
+		if (count == 2) count = 0;
+		else count++;
 	}
 
 	free(buffer);
