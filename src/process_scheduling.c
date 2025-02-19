@@ -236,7 +236,11 @@ bool priority(dyn_array_t *ready_queue, ScheduleResult_t *result)
 	return true;
 }
 
-//this function will schedule the tasks based on the round robin algorithm
+// Runs the Round Robin Process Scheduling algorithm over the incoming ready_queue
+// \param ready queue a dyn_array of type ProcessControlBlock_t that contain be up to N elements
+// \param result used for round robin stat tracking \ref ScheduleResult_t
+// \param the quantum
+// \return true if function ran successful else false for an error
 bool round_robin(dyn_array_t *ready_queue, ScheduleResult_t *result, size_t quantum) 
 {
 	UNUSED(ready_queue);
