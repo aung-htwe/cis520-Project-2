@@ -66,21 +66,21 @@ TEST (first_come_first_serve, CorrectProcess){
 	p1->arrival = 0;
 	p1->remaining_burst_time = 10;
 	p1->started = false;
-	dyn_array_push_back(queue, &p1);
+	dyn_array_push_back(queue, p1);
 
 	ProcessControlBlock_t *p2 = (ProcessControlBlock_t *)malloc(sizeof(ProcessControlBlock_t));
 	p2->priority = 1;
 	p2->arrival = 1;
 	p2->remaining_burst_time = 5;
 	p2->started = false;
-	dyn_array_push_back(queue, &p2);
+	dyn_array_push_back(queue, p2);
 	
 	ProcessControlBlock_t *p3 = (ProcessControlBlock_t *)malloc(sizeof(ProcessControlBlock_t));
 	p3->priority = 2;
 	p3->arrival = 2;
 	p3->remaining_burst_time = 8;
 	p3->started = false;
-	dyn_array_push_back(queue, &p3);
+	dyn_array_push_back(queue, p3);
 
 	ScheduleResult_t *output = (ScheduleResult_t *)malloc(sizeof(ScheduleResult_t));
 
@@ -90,7 +90,6 @@ TEST (first_come_first_serve, CorrectProcess){
 	float expected_waiting_time = 25.0/3.0;
 
 	EXPECT_EQ(true, result);
-	//printf("%f", output->average_turnaround_time);
 	EXPECT_EQ(expected_turnaround_time, output->average_turnaround_time);
 	EXPECT_EQ(expected_waiting_time, output->average_waiting_time);
 
@@ -114,28 +113,36 @@ TEST(shortest_job_first, CorrectProcess){
 	p1->arrival = 2;
 	p1->remaining_burst_time = 6;
 	p1->started = false;
-	dyn_array_push_back(queue, &p1);
+	dyn_array_push_back(queue, p1);
 
 	ProcessControlBlock_t *p2 = (ProcessControlBlock_t *)malloc(sizeof(ProcessControlBlock_t));
 	p2->priority = 0;
 	p2->arrival = 0;
 	p2->remaining_burst_time = 3;
 	p2->started = false;
-	dyn_array_push_back(queue, &p2);
+	dyn_array_push_back(queue, p2);
 	
 	ProcessControlBlock_t *p3 = (ProcessControlBlock_t *)malloc(sizeof(ProcessControlBlock_t));
 	p3->priority = 0;
 	p3->arrival = 1;
 	p3->remaining_burst_time = 8;
 	p3->started = false;
-	dyn_array_push_back(queue, &p3);
+	dyn_array_push_back(queue, p3);
 
 	ScheduleResult_t *output = (ScheduleResult_t *)malloc(sizeof(ScheduleResult_t));
 
 	bool result = shortest_remaining_time_first(queue, output);
 
-	assert(result);
-	assert(output->average_waiting_time == (0.0 + 1.0 + 4.0)/3.0);
+	float expected_waiting_time = (0.0 + 1.0 + 4.0) / 3.0;
+
+	EXPECT_EQ(true, result);
+	EXPECT_EQ(expected_waiting_time, output->average_waiting_time);
+
+	free(queue);
+	free(p1);
+	free(p2);
+	free(p3);
+	free(output);
 }
 
 
@@ -191,29 +198,38 @@ TEST(priority, CorrectProcess){
 	p1->arrival = 0;
 	p1->remaining_burst_time = 10;
 	p1->started = false;
-	dyn_array_push_back(queue, &p1);
+	dyn_array_push_back(queue, p1);
 
 	ProcessControlBlock_t *p2 = (ProcessControlBlock_t *)malloc(sizeof(ProcessControlBlock_t));
 	p2->priority = 0;
 	p2->arrival = 0;
 	p2->remaining_burst_time = 5;
 	p2->started = false;
-	dyn_array_push_back(queue, &p2);
+	dyn_array_push_back(queue, p2);
 	
 	ProcessControlBlock_t *p3 = (ProcessControlBlock_t *)malloc(sizeof(ProcessControlBlock_t));
 	p3->priority = 1;
 	p3->arrival = 0;
 	p3->remaining_burst_time = 8;
 	p3->started = false;
-	dyn_array_push_back(queue, &p3);
+	dyn_array_push_back(queue, p3);
 
 	ScheduleResult_t *output = (ScheduleResult_t *)malloc(sizeof(ScheduleResult_t));
 
 	bool result = shortest_remaining_time_first(queue, output);
 
-	assert(result);
-	assert(output->average_turnaround_time == (10.0 + 18.0 + 23.0)/3.0);
-	assert(output->average_waiting_time == (11.0 + 19.0 + 5.0)/3.0);
+	float expected_turnaround_time = (10.0 + 18.0 + 23.0)/3.0;
+	float expected_waiting_time = (11.0 + 19.0 + 5.0)/3.0;
+
+	EXPECT_EQ(true, result);
+	EXPECT_EQ(expected_turnaround_time, output->average_turnaround_time);
+	EXPECT_EQ(expected_waiting_time, output->average_waiting_time);
+
+	free(queue);
+	free(p1);
+	free(p2);
+	free(p3);
+	free(output);
 }
 
 
