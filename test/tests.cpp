@@ -46,7 +46,15 @@ TEST(load_process_control_blocks, InvalidParam){
 TEST (load_process_control_blocks, CorrectlyRead){
 	const char* input_filename = "../pcb.bin";
 	dyn_array_t* arr = load_process_control_blocks(input_filename);
-	ASSERT_NE((dyn_array_t*)NULL, arr);
+	ProcessControlBlock_t *pcb = (ProcessControlBlock_t *)dyn_array_at(arr, 0);
+	EXPECT_EQ(20.0, pcb->remaining_burst_time);
+	pcb = (ProcessControlBlock_t *)dyn_array_at(arr, 1);
+	EXPECT_EQ(5.0, pcb->remaining_burst_time);
+	pcb = (ProcessControlBlock_t *)dyn_array_at(arr, 2);
+	EXPECT_EQ(10.0, pcb->remaining_burst_time);
+	pcb = (ProcessControlBlock_t *)dyn_array_at(arr,3);
+	EXPECT_EQ(15.0, pcb->remaining_burst_time);
+	//ASSERT_NE((dyn_array_t*)NULL, arr);
 }
 
 /*

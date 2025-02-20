@@ -285,7 +285,7 @@ dyn_array_t *load_process_control_blocks(const char *input_file)
 			memcpy(&(pcb->priority), buffer, 4);
 		else if (count == 2){
 			memcpy(&(pcb->arrival), buffer, 4);
-			dyn_array_push_front(arr, &pcb);
+			dyn_array_push_front(arr, pcb);
 		}
 
 		if (count == 2) count = 0;
