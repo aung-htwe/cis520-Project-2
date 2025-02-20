@@ -95,6 +95,10 @@ TEST (first_come_first_serve, CorrectProcess){
 	EXPECT_EQ(expected_waiting_time, output->average_waiting_time);
 
 	free(queue);
+	free(p1);
+	free(p2);
+	free(p3);
+	free(output);
 }
 
 /*
