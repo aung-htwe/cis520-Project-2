@@ -40,13 +40,12 @@ bool first_come_first_serve(dyn_array_t *ready_queue, ScheduleResult_t *result)
 	{
 		return false;
 	}
-
-	uint32_t time = 0;
+	
+	uint32_t clockTime = 0;
+	uint32_t busyTime = 0;
 	uint32_t waitTime = 0;
-	uint32_t turnaroundTime = 0;
 
 	bool fin = false;
-
 	while(!fin)
 	{
 		//initialize a current PCB and an iterator
@@ -69,33 +68,36 @@ bool first_come_first_serve(dyn_array_t *ready_queue, ScheduleResult_t *result)
 				continue;
 
 			//update current PCB if walker has arrived and has more recent arrival (or if the cur is NULL, so we can initialize a PCB)
-			if((cur == NULL || walker->arrival < cur->arrival) && walker->arrival <= time)
+			if((cur == NULL || walker->arrival < cur->arrival) && walker->arrival <= clockTime)
 				cur = walker;
 		}
 		
 		//if you can't find anything valid, increment time, otherwise operate on the PCB
 		if(cur == NULL)
-			time++;
+		{
+			clockTime++;
+			busyTime++;
+		}
 		else
 		{
-			waitTime += time;
+			waitTime += (clockTime - cur->arrival);
 			cur->started = true;
 			while(cur->remaining_burst_time > 0)
 			{
 				virtual_cpu(cur);
-				time++;
+				clockTime++;
 			}
-			turnaroundTime += time;
 		}
 	}
 
 	//decrement time once to account for the final wait after finishing
-	time--;
+	clockTime--;
+	busyTime--;
 
 	//calculate the result values
 	result->average_waiting_time = (float)waitTime / ready_queue->size;
-	result->average_turnaround_time = (float)turnaroundTime / ready_queue->size;
-	result->total_run_time = (unsigned long) time;
+	result->total_run_time = (unsigned long) clockTime - busyTime;
+	result->average_turnaround_time = (float) (result->average_waiting_time + result->total_run_time) / ready_queue->size;
 	
 	return true;
 }
