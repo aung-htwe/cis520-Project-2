@@ -255,7 +255,7 @@ dyn_array_t *load_process_control_blocks(const char *input_file)
 {
 	// check if file is NULL or bad file name
 	if (input_file == NULL) return NULL;
-	if (strchr(input_file, '\n') != NULL || strcmp(input_file, "\0") == 0 || strcmp(input_file, "") == 0) return NULL;
+	if (strncmp(input_file, "\0", 1) == 0 || strncmp(input_file, "", 1) == 0 || strncmp(input_file, "\n", 1) == 0) return NULL;
 
 	// attempt to open input file. If error, return NULL
 	FILE* file = fopen(input_file, "rb");
