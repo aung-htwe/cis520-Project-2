@@ -251,7 +251,12 @@ bool round_robin(dyn_array_t *ready_queue, ScheduleResult_t *result, size_t quan
 	return true;
 }
 
-dyn_array_t *load_process_control_blocks(const char *input_file) 
+
+// Reads the PCB properties from the binary file into a ProcessControlBlock_t struct and its respective members.
+// for N number of PCBs stored in the file.
+// \param input_file the binary file contaiing the number of PCBs and contents of PCBs
+// \return a populated dyn_array of ProcessControlBlocks if function ran successful else NULL for an error
+dyn_array_t *load_process_control_blocks(const char *input_file)
 {
 	// check if file is NULL or bad file name
 	if (input_file == NULL) return NULL;
@@ -265,37 +270,60 @@ dyn_array_t *load_process_control_blocks(const char *input_file)
 	int count = 0;
 	size_t read;
 
-	unsigned char* buffer = (unsigned char*) malloc(sizeof(uint32_t)); 
+	// attempt to allocate buffer used for reading file. If error, return NULL
+	unsigned char* buffer = (unsigned char*) malloc(sizeof(uint32_t));
 	if (buffer == NULL) return NULL;
 
+	// grab n = number of PCBs. If can't read from file, return NULL
+	if ((read = fread(buffer, 4, 1, file)) == 1)
+		memcpy(&n, buffer, sizeof(uint32_t));
+	else{
+		free(buffer);
+		fclose(file);
+		return NULL;
+	}
 
-	// grab n = number of PCBs
-	if ((read = fread(buffer, 4, 1, file)) > 0)
-		memcpy(&n, buffer, sizeof(uint32_t)); 
-
-	// create array with room for n PCBs
+	// create array with room for n PCBs. If error, return NULL
 	dyn_array_t* arr = dyn_array_create((size_t)n, sizeof(ProcessControlBlock_t), NULL);
+	if (arr == NULL){
+		free(buffer);
+		fclose(file);
+		return NULL;
+	}
+
+	// declare pcb struct to store pcb values in file
 	ProcessControlBlock_t* pcb;
 
-	// read PCB contents 
-	while ((read = fread(buffer, 4, 1, file)) > 0){
+	// read PCB contents
+	while ((read = fread(buffer, 4, 1, file)) == 1){
+		// if count is 0, next int read is remaining_burst_time. Also allocate pcb to store next 3 values
 		if (count == 0){
 			pcb = (ProcessControlBlock_t*) malloc (sizeof(ProcessControlBlock_t));
 			memcpy(&(pcb->remaining_burst_time), buffer, 4);
 		}
+		// if count is 1, next int read is priority. Store in the same pcb allocated
 		else if (count == 1)
 			memcpy(&(pcb->priority), buffer, 4);
+		// if count is 2, next int read is arrival. Store in the same pcb allocated and push onto array since this is the last value to be stored
 		else if (count == 2){
 			memcpy(&(pcb->arrival), buffer, 4);
-			dyn_array_push_front(arr, pcb);
+			if (!dyn_array_push_front(arr, pcb)){	// if can't push onto array, free allocated memory and return NULL
+				free(buffer);
+				free(pcb);
+				fclose(file);
+				dyn_array_destroy(arr);
+				return NULL;
+			}
 		}
 
+		// if count is 2, next value is the remaining_burst_time for the next pcb. Restart back to 0 and allocate a new pcb. Else, increment count
 		if (count == 2) count = 0;
 		else count++;
 	}
 
+	// free buffer, close file, and return array
 	free(buffer);
-
+	fclose(file);
 	return arr;
 }
 
