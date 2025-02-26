@@ -249,9 +249,67 @@ bool priority(dyn_array_t *ready_queue, ScheduleResult_t *result)
 // \return true if function ran successful else false for an error
 bool round_robin(dyn_array_t *ready_queue, ScheduleResult_t *result, size_t quantum) 
 {
-	UNUSED(ready_queue);
-	UNUSED(result);
-	UNUSED(quantum);
+	//check for valid input
+	if(ready_queue == NULL || result == NULL || ready_queue->data_size != sizeof(ProcessControlBlock_t) || quantum == 0){
+		return false;
+	}
+
+	uint32_t clockTime = 0; //total time
+	uint32_t busyTime = 0; //sum of turnaround times of all processes
+	uint32_t waitTime = 0; //sum of waiting times of all processes
+	size_t num_processes = dyn_array_size(ready_queue); //total number of processes in the ready queue
+
+	//Create new array to hold modified queue
+	dyn_array_t *queue = dyn_array_create(dyn_array_size(ready_queue), sizeof(ProcessControlBlock_t), NULL);
+	//Check that queue was created correctly
+	if(queue == NULL){
+		return false;
+	}
+	//Iterrate through the original queue and copy elements to the new queue
+	for(size_t i = 0; i < num_processes; i++){
+		ProcessControlBlock_t process;
+		dyn_array_extract_front(ready_queue, &process);
+		dyn_array_push_back(queue, &process);
+	}
+
+	//Main algorithm loop
+	while(dyn_array_empty(queue) == false){ //runs until queue is empty
+		ProcessControlBlock_t process;
+		dyn_array_extract_front(queue, &process);
+
+		//check if a process has started yet. If not, start it and save it's burst time for waiting time calcs
+		if(process.started == false){
+			process.started = true;
+			process.initial_burst_time = process.remaining_burst_time;
+		}
+
+		//check if the remaining burst time is smaller than the quantum, so we can make sure the process doesn't get scheduled for more time than it needs
+		uint32_t time_slice = (process.remaining_burst_time > quantum) ? quantum : process.remaining_burst_time;
+		clockTime += time_slice;
+		process.remaining_burst_time -= time_slice;
+
+		//If the process hasn't finished, put it back in the queue
+		if(process.remaining_burst_time > 0){
+			dyn_array_push_back(queue, &process);
+		}
+		//otherwise calculate turnaround time and waiting time, and accumulate them.
+		else{
+			uint32_t turnaround_time = clockTime - process.arrival;
+			uint32_t waiting_time = turnaround_time - process.initial_burst_time;
+
+			busyTime += turnaround_time;
+			waitTime += waiting_time;
+		}
+	}
+	
+	//destroy the queue we created
+	dyn_array_destroy(queue);
+
+	//calculate values
+	result->total_run_time = clockTime;
+	result->average_turnaround_time = (float)busyTime / num_processes;
+	result->average_waiting_time = (float)waitTime / num_processes;
+
 	return true;
 }
 

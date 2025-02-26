@@ -214,11 +214,11 @@ TEST(priority, CorrectProcess){
 	free(p3);
 	free(output);
 }
-
+*/
 
 
 TEST(round_robin, InvalidParam){
-	EXPECT_EQ(false, priority(NULL,NULL));
+	EXPECT_EQ(false, round_robin(NULL,NULL,0));
 }
 
 TEST(round_robin, CorrectProcess){
@@ -247,13 +247,22 @@ TEST(round_robin, CorrectProcess){
 
 	ScheduleResult_t *output = (ScheduleResult_t *)malloc(sizeof(ScheduleResult_t));
 
-	bool result = shortest_remaining_time_first(queue, output);
+	bool result = round_robin(queue, output, 4);
 
-	assert(result);
-	assert(output->average_turnaround_time == (23.0 + 15.0 + 21.0)/3.0);
-	assert(output->average_waiting_time == (13.0 + 10.0 + 13.0)/3.0);
+	float expected_turnaround_time = (23.0 + 17.0 + 21.0)/3.0;
+	float expected_waiting_time = (13.0 + 12.0 + 13.0)/3.0;
+
+	EXPECT_EQ(true, result);
+	EXPECT_EQ(expected_turnaround_time, output->average_turnaround_time);
+	EXPECT_EQ(expected_waiting_time, output->average_waiting_time);
+
+	dyn_array_destroy(queue);
+	free(p1);
+	free(p2);
+	free(p3);
+	free(output);
 }
-
+/*
 TEST(shortest_remaining_time_first, InvalidParam){
 	EXPECT_EQ(false, shortest_remaining_time_first(NULL,NULL));
 }
