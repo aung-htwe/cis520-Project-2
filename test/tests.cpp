@@ -134,7 +134,7 @@ TEST (first_come_first_serve, CorrectProcess){
 	free(output);
 }
 
-/*
+
 TEST(shortest_job_first, InvalidParam){
 	//checking that the output is false when we pass in null parameters
 	EXPECT_EQ(false, shortest_job_first(NULL,NULL));
@@ -172,11 +172,13 @@ TEST(shortest_job_first, CorrectProcess){
 	//running scheduling algorithm
 	bool result = shortest_remaining_time_first(queue, output);
 
-	float expected_waiting_time = (0.0 + 1.0 + 4.0) / 3.0;
+	float expected_waiting_time = (0.0 + 1.0 + 8.0) / 3.0;
+	float expected_turnaround_time = (3.0 + 16.0 + 7.0) / 3.0;
 
 	//checking the waiting time vs expected
 	EXPECT_EQ(true, result);
 	EXPECT_EQ(expected_waiting_time, output->average_waiting_time);
+	EXPECT_EQ(expected_turnaround_time, output->average_turnaround_time);
 
 	dyn_array_destroy(queue);
 	free(output);
@@ -219,8 +221,8 @@ TEST(priority, CorrectProcess){
 	//running scheduling algorithm
 	bool result = shortest_remaining_time_first(queue, output);
 
-	float expected_turnaround_time = (10.0 + 18.0 + 23.0)/3.0;
-	float expected_waiting_time = (11.0 + 19.0 + 5.0)/3.0;
+	float expected_turnaround_time = (5.0 + 13.0 + 23.0)/3.0;
+	float expected_waiting_time = (0.0 + 13.0 + 5.0)/3.0;
 
 	EXPECT_EQ(true, result);
 	EXPECT_EQ(expected_turnaround_time, output->average_turnaround_time);
@@ -229,7 +231,7 @@ TEST(priority, CorrectProcess){
 	dyn_array_destroy(queue);
 	free(output);
 }
-*/
+
 
 
 TEST(round_robin, InvalidParam){
@@ -279,7 +281,7 @@ TEST(round_robin, CorrectProcess){
 	dyn_array_destroy(queue);
 	free(output);
 }
-/*
+
 TEST(shortest_remaining_time_first, InvalidParam){
 	//checking that we output false for incorrect params
 	EXPECT_EQ(false, shortest_remaining_time_first(NULL,NULL));
@@ -315,15 +317,17 @@ TEST(shortest_remaining_time_first, CorrectProcess){
 
 	bool result = shortest_remaining_time_first(queue, output);
 
+	float expected_turnaround_time = (11.0 + 19.0 + 5.0)/3.0;
+	float expected_waiting_time = (5.0 + 11.0)/3.0;
+
 	EXPECT_EQ(true,result);
-	EXPECT_EQ((11.0 + 19.0 + 5.0)/3.0, output->average_turnaround_time);
-	EXPECT_EQ((5.0 + 11.0)/3.0, output->average_waiting_time);
+	EXPECT_EQ(expected_turnaround_time, output->average_turnaround_time);
+	EXPECT_EQ(expected_waiting_time, output->average_waiting_time);
 
 	dyn_array_destroy(queue);
 	free(output);
 }
 
-*/
 int main(int argc, char **argv)
 {
 	::testing::InitGoogleTest(&argc, argv);
