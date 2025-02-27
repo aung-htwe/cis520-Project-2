@@ -258,6 +258,9 @@ bool round_robin(dyn_array_t *ready_queue, ScheduleResult_t *result, size_t quan
 	uint32_t busyTime = 0; //sum of turnaround times of all processes
 	uint32_t waitTime = 0; //sum of waiting times of all processes
 	size_t num_processes = dyn_array_size(ready_queue); //total number of processes in the ready queue
+	if(num_processes == 0){
+		return false;
+	}
 
 	//Create new array to hold modified queue
 	dyn_array_t *queue = dyn_array_create(dyn_array_size(ready_queue), sizeof(ProcessControlBlock_t), NULL);
