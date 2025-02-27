@@ -49,12 +49,13 @@ TEST(load_process_control_blocks, InvalidParam){
 	EXPECT_EQ(NULL, load_process_control_blocks("../fakefile.bin"));
 }
 
+
 TEST (load_process_control_blocks, CorrectlyRead){
 	//Filename to be passed in
-	const char* input_filename = "../pcb.bin";
+	const char* input_filename = "pcb.bin";
 	//create array based on contents of file
 	dyn_array_t* arr = load_process_control_blocks(input_filename);
-	
+
 	//Check each individual pcb
 	ProcessControlBlock_t *pcb = (ProcessControlBlock_t *)dyn_array_at(arr, 0);
 	EXPECT_EQ(20.0, pcb->remaining_burst_time);
@@ -177,8 +178,8 @@ TEST(shortest_job_first, CorrectProcess){
 
 	//checking the waiting time vs expected
 	EXPECT_EQ(true, result);
-	EXPECT_EQ(expected_waiting_time, output->average_waiting_time);
-	EXPECT_EQ(expected_turnaround_time, output->average_turnaround_time);
+	EXPECT_FLOAT_EQ(expected_waiting_time, output->average_waiting_time);
+	EXPECT_FLOAT_EQ(expected_turnaround_time, output->average_turnaround_time);
 
 	dyn_array_destroy(queue);
 	free(output);
@@ -225,8 +226,8 @@ TEST(priority, CorrectProcess){
 	float expected_waiting_time = (0.0 + 13.0 + 5.0)/3.0;
 
 	EXPECT_EQ(true, result);
-	EXPECT_EQ(expected_turnaround_time, output->average_turnaround_time);
-	EXPECT_EQ(expected_waiting_time, output->average_waiting_time);
+	EXPECT_FLOAT_EQ(expected_turnaround_time, output->average_turnaround_time);
+	EXPECT_FLOAT_EQ(expected_waiting_time, output->average_waiting_time);
 
 	dyn_array_destroy(queue);
 	free(output);
