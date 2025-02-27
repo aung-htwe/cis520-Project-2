@@ -287,9 +287,18 @@ bool round_robin(dyn_array_t *ready_queue, ScheduleResult_t *result, size_t quan
 		}
 
 		//check if the remaining burst time is smaller than the quantum, so we can make sure the process doesn't get scheduled for more time than it needs
-		uint32_t time_slice = (process.remaining_burst_time > quantum) ? quantum : process.remaining_burst_time;
-		clockTime += time_slice;
-		process.remaining_burst_time -= time_slice;
+		uint32_t time_slice;
+		if(process.remaining_burst_time > quantum){
+			time_slice = quantum;
+		}
+		else{
+			time_slice = process.remaining_burst_time;
+		}
+		while(time_slice != 0){
+			virtual_cpu(&process);
+			clockTime++;
+			time_slice--;
+		}
 
 		//If the process hasn't finished, put it back in the queue
 		if(process.remaining_burst_time > 0){

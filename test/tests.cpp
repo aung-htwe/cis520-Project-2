@@ -78,7 +78,6 @@ TEST (load_process_control_blocks, CorrectlyRead){
 
 	//destroy the array to free memory
 	dyn_array_destroy(arr);
-	free(pcb);
 }
 
 /*
@@ -132,9 +131,6 @@ TEST (first_come_first_serve, CorrectProcess){
 
 	//free all variables
 	dyn_array_destroy(queue);
-	free(p1);
-	free(p2);
-	free(p3);
 	free(output);
 }
 
@@ -183,9 +179,6 @@ TEST(shortest_job_first, CorrectProcess){
 	EXPECT_EQ(expected_waiting_time, output->average_waiting_time);
 
 	dyn_array_destroy(queue);
-	free(p1);
-	free(p2);
-	free(p3);
 	free(output);
 }
 
@@ -234,9 +227,6 @@ TEST(priority, CorrectProcess){
 	EXPECT_EQ(expected_waiting_time, output->average_waiting_time);
 
 	dyn_array_destroy(queue);
-	free(p1);
-	free(p2);
-	free(p3);
 	free(output);
 }
 */
@@ -287,9 +277,6 @@ TEST(round_robin, CorrectProcess){
 	EXPECT_EQ(expected_waiting_time, output->average_waiting_time);
 
 	dyn_array_destroy(queue);
-	free(p1);
-	free(p2);
-	free(p3);
 	free(output);
 }
 /*
@@ -334,9 +321,6 @@ TEST(shortest_remaining_time_first, CorrectProcess){
 
 	dyn_array_destroy(queue);
 	free(output);
-	free(p1);
-	free(p2);
-	free(p3);
 }
 
 */
