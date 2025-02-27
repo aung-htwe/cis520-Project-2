@@ -11,3 +11,29 @@ You can manually copy the time analysis from console and paste it to this file, 
 ---------------------------------------------------------------------------
 Add your scheduling algorithm analysis below this line in a readable format.
 ---------------------------------------------------------------------------
+
+
+Results for First Come First Serve...................
+Average waiting time: 16.000000
+Average turnaround time: 28.500000
+Total run time: 50
+
+
+Results for Shortest Job First.......................
+Average waiting time: 14.750000
+Average turnaround time: 27.250000
+Total run time: 50
+
+
+Results for Priority.................................
+Average waiting time: 21.000000
+Average turnaround time: 33.500000
+Total run time: 50
+
+
+Results for Round Robin..............................
+Average waiting time: 24.000000
+Average turnaround time: 36.500000
+Total run time: 50
+
+
