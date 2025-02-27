@@ -16,6 +16,9 @@ set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Wshadow -Werror -g")
 # THIS IS REQUIRED
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
+# Copy pcb.bin to build
+file(COPY pcb.bin DESTINATION ${CMAKE_SOURCE_DIR}/build)
+
 # Create library from dyn_array so we can use it later
 add_library(dyn_array src/dyn_array.c)
 
