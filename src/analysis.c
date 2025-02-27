@@ -28,9 +28,6 @@ int new_strcmp(const char *s1, const char *s2) {
 // return EXIT_SUCCESS if successful, EXIT_FAILURE if error
 int main(int argc, char **argv) 
 {
-	// change directory to parent directory
-	chdir("..");
-
 	// if insufficient amount of arguments, return EXIT_FAILURE
 	if (argc < 3 || argc > 4) {
 		printf("%s <pcb file> <schedule algorithm> [quantum]\n", argv[0]);
@@ -57,8 +54,10 @@ int main(int argc, char **argv)
 	ScheduleResult_t *result = (ScheduleResult_t*) malloc(sizeof(ScheduleResult_t));
 	if(result == NULL) return EXIT_FAILURE;
 
+	// change directory to parent folder
+	chdir("..");
 
-	// Open file to print out to. If can't open, return failure
+	// Open file to print out to
 	FILE *fptr = fopen("README.md", "a");
 	if (fptr == NULL) return EXIT_FAILURE;
 
