@@ -32,7 +32,10 @@ void virtual_cpu(ProcessControlBlock_t *process_control_block)
 	*/
 
 
-//this function will schedule the tasks based on which has arrived first, and it does NOT exhibit preemptive behavior
+// this function will schedule the tasks based on which has arrived first, and it does NOT exhibit preemptive behavior
+// \param ready queue a dyn_array of type ProcessControlBlock_t that contains up to N elements
+// \param result used for the first come first serve stat tracking \ref ScheduleResult_t
+// \return true if function ran successful else false for an error
 bool first_come_first_serve(dyn_array_t *ready_queue, ScheduleResult_t *result) 
 {
 	//check that input is valid and contains PCB's'
@@ -102,7 +105,10 @@ bool first_come_first_serve(dyn_array_t *ready_queue, ScheduleResult_t *result)
     return true;
 }
 
-//this function will schedule the tasks based on which has the shortest job, and it does NOT exhibit preemptive behavior
+// this function will schedule the tasks based on which has the shortest job, and it does NOT exhibit preemptive behavior
+// \param ready queue a dyn_array of type ProcessControlBlock_t that contains up to N elements
+// \param result used for the shortest job first stat tracking \ref ScheduleResult_t
+// \return true if function ran successful, else false for an error
 bool shortest_job_first(dyn_array_t *ready_queue, ScheduleResult_t *result) 
 {
 	//check that input is valid and contains PCB's'
@@ -172,7 +178,10 @@ bool shortest_job_first(dyn_array_t *ready_queue, ScheduleResult_t *result)
     return true;
 }
 
-//this function will schedule the tasks based on which has the lowest priority, and it does NOT exhibit preemptive behavior
+// this function will schedule the tasks based on which has the lowest priority, and it does NOT exhibit preemptive behavior
+// \param ready queue a dyn_array of type ProcessControlBlock_t that contains up to N elements
+// \param result used for shortest job first stat tracking \ref ScheduleResult_t
+// \return true if function ran successfully, false if error
 bool priority(dyn_array_t *ready_queue, ScheduleResult_t *result) 
 {
 	//check that input is valid and contains PCB's'
@@ -401,6 +410,10 @@ dyn_array_t *load_process_control_blocks(const char *input_file)
 	return arr;
 }
 
+// Runs the Shortest Remaining Time First algorithm over the incoming ready_queue
+// \param ready queue for a dyn_array of type ProcessControlBlock_t that contains up to N elements
+// \param result used for the shortest job first stat tracking \ref ScheduleResult_t
+// \return true if function ran successful, else false for an error
 bool shortest_remaining_time_first(dyn_array_t *ready_queue, ScheduleResult_t *result) 
 {
 	//check that input is valid and contains PCB's'
