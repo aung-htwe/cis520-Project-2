@@ -18,20 +18,6 @@ void virtual_cpu(ProcessControlBlock_t *process_control_block)
 	--process_control_block->remaining_burst_time;
 }
 
-/*
-	result:
-	float average_waiting_time;	 // the average waiting time in the ready queue until first schedue on the cpu
-	float average_turnaround_time;  // the average completion time of the PCBs
-	unsigned long total_run_time;   // the total time to process all the PCBs in the ready queue
-
-	PCB:
-	uint32_t remaining_burst_time;  // the remaining burst of the pcb
-	uint32_t priority;				// The priority of the task
-	uint32_t arrival;				// Time the process arrived in the ready queue
-	bool started;			  		// If it has been activated on virtual CPU
-	*/
-
-
 // this function will schedule the tasks based on which has arrived first, and it does NOT exhibit preemptive behavior
 // \param ready queue a dyn_array of type ProcessControlBlock_t that contains up to N elements
 // \param result used for the first come first serve stat tracking \ref ScheduleResult_t
@@ -39,41 +25,40 @@ void virtual_cpu(ProcessControlBlock_t *process_control_block)
 bool first_come_first_serve(dyn_array_t *ready_queue, ScheduleResult_t *result) 
 {
 	//check that input is valid and contains PCB's'
-    if(ready_queue == NULL || result == NULL || ready_queue->data_size != sizeof(ProcessControlBlock_t))
+    if(ready_queue == NULL || result == NULL || ready_queue->data_size != sizeof(ProcessControlBlock_t) || ready_queue->size == 0)
     {
     	return false;
     }
     
-    uint32_t clockTime = 0;
-    uint32_t busyTime = 0;
-    uint32_t waitTime = 0;
+    uint32_t clockTime = 0; //total time running
+    uint32_t busyTime = 0; //time spent busy waiting
+    uint32_t waitTime = 0; //the gross collective waiting time of all processes
     
+    //run loop until all PCB's are complete
     bool fin = false;
     while(!fin)
     {
     	//initialize a current PCB and an iterator
-    	ProcessControlBlock_t* cur = NULL;
-    	uint8_t* iter = (uint8_t *) ready_queue->array;
+    	ProcessControlBlock_t* cur = NULL; //current PCB to operate on
+    	uint8_t* iter = (uint8_t *) ready_queue->array; //iterator used to update compare cur against the rest of the PCB's
     	
     	fin = true;
     
-    	//store next shortest and valid job in cur and update fin;
+    	//store next oldest and valid job in cur and update fin;
     	for (size_t idx = 0; idx < ready_queue->size; ++idx, iter += ready_queue->data_size) 
     	{
     		ProcessControlBlock_t* walker = (ProcessControlBlock_t*) iter;
     		
-    		//check if current walker is valid for comparison, updating fin or returning false if encountering invalid process
+    		//check if current walker is incomplete, update fin
     		if(walker->remaining_burst_time > 0)
     			fin = false;
-    		else if(!(walker->started))
-    			return false;
     		else
-    			continue;
+                continue;
     
     		//update current PCB if walker has arrived and has more recent arrival (or if the cur is NULL, so we can initialize a PCB)
     		if((cur == NULL || walker->arrival < cur->arrival) && walker->arrival <= clockTime)
     			cur = walker;
-    	}
+        }
     	
     	//if you can't find anything valid, increment time, otherwise operate on the PCB
     	if(cur == NULL)
@@ -83,6 +68,7 @@ bool first_come_first_serve(dyn_array_t *ready_queue, ScheduleResult_t *result)
     	}
     	else
     	{
+            //update time variables and run PCB to completion
     		waitTime += (clockTime - cur->arrival);
     		cur->started = true;
     		while(cur->remaining_burst_time > 0)
@@ -112,21 +98,22 @@ bool first_come_first_serve(dyn_array_t *ready_queue, ScheduleResult_t *result)
 bool shortest_job_first(dyn_array_t *ready_queue, ScheduleResult_t *result) 
 {
 	//check that input is valid and contains PCB's'
-    if(ready_queue == NULL || result == NULL || ready_queue->data_size != sizeof(ProcessControlBlock_t))
+    if(ready_queue == NULL || result == NULL || ready_queue->data_size != sizeof(ProcessControlBlock_t) || ready_queue->size == 0)
     {
     	return false;
     }
     
-    uint32_t clockTime = 0;
-    uint32_t busyTime = 0;
-    uint32_t waitTime = 0;
+    uint32_t clockTime = 0; //total time running
+    uint32_t busyTime = 0; //time spent busy waiting
+    uint32_t waitTime = 0; //the gross collective waiting time of all processes
     
+    //run loop until all PCB's are complete
     bool fin = false;
     while(!fin)
     {
     	//initialize a current PCB and an iterator
-    	ProcessControlBlock_t* cur = NULL;
-    	uint8_t* iter = (uint8_t *) ready_queue->array;
+    	ProcessControlBlock_t* cur = NULL; //current PCB to operate on
+    	uint8_t* iter = (uint8_t *) ready_queue->array; //iterator used to update compare cur against the rest of the PCB's
     	
     	fin = true;
     
@@ -135,11 +122,9 @@ bool shortest_job_first(dyn_array_t *ready_queue, ScheduleResult_t *result)
     	{
     		ProcessControlBlock_t* walker = (ProcessControlBlock_t*) iter;
     		
-    		//check if current walker is valid for comparison, updating fin or returning false if encountering invalid process
+    		//check if current walker is incomplete, update fin
     		if(walker->remaining_burst_time > 0)
     			fin = false;
-    		else if(!(walker->started))
-    			return false;
     		else
     			continue;
     
@@ -156,6 +141,7 @@ bool shortest_job_first(dyn_array_t *ready_queue, ScheduleResult_t *result)
     	}
     	else
     	{
+            //update time variables and run PCB to completion
     		waitTime += (clockTime - cur->arrival);
     		cur->started = true;
     		while(cur->remaining_burst_time > 0)
@@ -185,21 +171,21 @@ bool shortest_job_first(dyn_array_t *ready_queue, ScheduleResult_t *result)
 bool priority(dyn_array_t *ready_queue, ScheduleResult_t *result) 
 {
 	//check that input is valid and contains PCB's'
-    if(ready_queue == NULL || result == NULL || ready_queue->data_size != sizeof(ProcessControlBlock_t))
+    if(ready_queue == NULL || result == NULL || ready_queue->data_size != sizeof(ProcessControlBlock_t) || ready_queue->size == 0)
     {
     	return false;
     }
     
-    uint32_t clockTime = 0;
-    uint32_t busyTime = 0;
-    uint32_t waitTime = 0;
+    uint32_t clockTime = 0; //total time running
+    uint32_t busyTime = 0; //time spent busy waiting
+    uint32_t waitTime = 0; //the gross collective waiting time of all processes
     
     bool fin = false;
     while(!fin)
     {
     	//initialize a current PCB and an iterator
-    	ProcessControlBlock_t* cur = NULL;
-    	uint8_t* iter = (uint8_t *) ready_queue->array;
+    	ProcessControlBlock_t* cur = NULL; //current PCB to operate on
+    	uint8_t* iter = (uint8_t *) ready_queue->array; //iterator used to update compare cur against the rest of the PCB's
     	
     	fin = true;
     
@@ -208,11 +194,9 @@ bool priority(dyn_array_t *ready_queue, ScheduleResult_t *result)
     	{
     		ProcessControlBlock_t* walker = (ProcessControlBlock_t*) iter;
     		
-    		//check if current walker is valid for comparison, updating fin or returning false if encountering invalid process
+    		//check if current walker is incomplete, update fin
     		if(walker->remaining_burst_time > 0)
     			fin = false;
-    		else if(!(walker->started))
-    			return false;
     		else
     			continue;
     
@@ -229,6 +213,7 @@ bool priority(dyn_array_t *ready_queue, ScheduleResult_t *result)
     	}
     	else
     	{
+            //update time variables and run PCB to completion
     		waitTime += (clockTime - cur->arrival);
     		cur->started = true;
     		while(cur->remaining_burst_time > 0)
@@ -410,28 +395,28 @@ dyn_array_t *load_process_control_blocks(const char *input_file)
 	return arr;
 }
 
-// Runs the Shortest Remaining Time First algorithm over the incoming ready_queue
+// Preemptively runs the Shortest Remaining Time First algorithm over the incoming ready_queue
 // \param ready queue for a dyn_array of type ProcessControlBlock_t that contains up to N elements
 // \param result used for the shortest job first stat tracking \ref ScheduleResult_t
 // \return true if function ran successful, else false for an error
 bool shortest_remaining_time_first(dyn_array_t *ready_queue, ScheduleResult_t *result) 
 {
 	//check that input is valid and contains PCB's'
-    if(ready_queue == NULL || result == NULL || ready_queue->data_size != sizeof(ProcessControlBlock_t))
+    if(ready_queue == NULL || result == NULL || ready_queue->data_size != sizeof(ProcessControlBlock_t) || ready_queue->size == 0)
     {
     	return false;
     }
     
-    uint32_t clockTime = 0;
-    uint32_t busyTime = 0;
-    uint32_t waitTime = 0;
+    uint32_t clockTime = 0; //total time running
+    uint32_t busyTime = 0; //time spent busy waiting
+    uint32_t waitTime = 0; //the gross collective waiting time of all processes
     
     bool fin = false;
     while(!fin)
     {
     	//initialize a current PCB and an iterator
-    	ProcessControlBlock_t* cur = NULL;
-    	uint8_t* iter = (uint8_t *) ready_queue->array;
+    	ProcessControlBlock_t* cur = NULL; //current PCB to operate on
+    	uint8_t* iter = (uint8_t *) ready_queue->array; //iterator used to update compare cur against the rest of the PCB's
     	
     	fin = true;
     
@@ -440,11 +425,9 @@ bool shortest_remaining_time_first(dyn_array_t *ready_queue, ScheduleResult_t *r
     	{
     		ProcessControlBlock_t* walker = (ProcessControlBlock_t*) iter;
     		
-    		//check if current walker is valid for comparison, updating fin or returning false if encountering invalid process
+    		//check if current walker is incomplete, update fin
     		if(walker->remaining_burst_time > 0)
     			fin = false;
-    		else if(!(walker->started))
-    			return false;
     		else
     			continue;
     
@@ -461,6 +444,7 @@ bool shortest_remaining_time_first(dyn_array_t *ready_queue, ScheduleResult_t *r
     	}
     	else
     	{
+            //update time variables and run PCB for one clock tick
     		waitTime += (clockTime - cur->arrival);
     		cur->started = true;
 			virtual_cpu(cur);
