@@ -9,6 +9,7 @@
 #define P "P"
 #define RR "RR"
 #define SJF "SJF"
+#define STR "STR"
 
 // New and safer strcmp
 // \param s1 first string to compare
@@ -77,6 +78,10 @@ int main(int argc, char **argv)
 	else if(new_strcmp(algorithm, SJF) == 0){
 		shortest_job_first(readyQueue, result);
 		fprintf(fptr, "Results for Shortest Job First.......................\n");
+	}
+	else if (new_strcmp(algorithm, STR) == 0){
+		shortest_remaining_time_first(readyQueue, result);
+		fprintf(fptr, "Results for Shortest Remaining Time First............\n");
 	}
 
 	// print stats for scheduling algorithm
