@@ -37,3 +37,9 @@ Average turnaround time: 36.500000
 Total run time: 50
 
 
+Results for Shortest Remaining Time First............
+Average waiting time: 11.750000
+Average turnaround time: 24.250000
+Total run time: 50
+
+
